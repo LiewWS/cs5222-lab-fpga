@@ -71,7 +71,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	L1: for (int i = 0; i < BATCH; i++) {
 		// Iterate over output classes
 		L2: for (int j = 0; j < CLASSES; j++) {
-#pragma HLS UNROLL factor=16
+#pragma HLS UNROLL factor=128
 			// Perform the dot product
 			T tmp = offset_buf[j];
 			L3: for(int k = 0; k < FEAT; k++) {
