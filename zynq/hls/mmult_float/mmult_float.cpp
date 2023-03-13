@@ -27,8 +27,8 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	// Hardware buffers
 	T offset_buf[CLASSES];
 	T weight_buf[CLASSES][FEAT];
-	T in_buf[BATCH][FEAT];
-	T out_buf[BATCH][CLASSES];
+	T in_buf[TILE_SIZE][FEAT];
+	T out_buf[TILE_SIZE][CLASSES];
 
 #pragma HLS ARRAY_PARTITION variable=in_buf factor=8 block dim=2
 #pragma HLS ARRAY_PARTITION variable=weight_buf factor=8 block dim=2
