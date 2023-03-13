@@ -30,8 +30,8 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	T in_buf[BATCH][FEAT];
 	T out_buf[BATCH][CLASSES];
 
-//#pragma HLS ARRAY_PARTITION variable=in_buf factor=8 block dim=2
-//#pragma HLS ARRAY_PARTITION variable=weight_buf factor=8 block dim=2
+#pragma HLS ARRAY_PARTITION variable=in_buf factor=8 block dim=2
+#pragma HLS ARRAY_PARTITION variable=weight_buf factor=8 block dim=2
 
 	// Input and output AXI stream indices
 	int is_idx = 0;
@@ -48,7 +48,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	LOAD_W_1: for (int i = 0; i < CLASSES; i++) {
 		LOAD_W_2: for (int j = 0; j < FEAT; j+=WIDTH_RATIO) {
 			// Pop AXI data packet
-			//#pragma HLS UNROLL factor=4
+#pragma HLS UNROLL factor=4
 			converter.packet = pop_stream(in_stream[is_idx++]);
 			weight_buf[i][j+0]  = converter.val.f0;
 			weight_buf[i][j+1]  = converter.val.f1;
@@ -60,7 +60,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	LOAD_I_1: for (int i = 0; i < BATCH; i++) {
 		LOAD_I_2: for (int j = 0; j < FEAT; j+=WIDTH_RATIO) {
 			// Pop AXI data packet
-			//#pragma HLS UNROLL factor=4
+#pragma HLS UNROLL factor=4
 			converter.packet = pop_stream(in_stream[is_idx++]);
 			in_buf[i][j+0]  = converter.val.f0;
 			in_buf[i][j+1]  = converter.val.f1;
@@ -71,11 +71,10 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	L1: for (int i = 0; i < BATCH; i++) {
 		// Iterate over output classes
 		L2: for (int j = 0; j < CLASSES; j++) {
-#pragma HLS UNROLL factor=128
+#pragma HLS PIPELINE II=1
 			// Perform the dot product
 			T tmp = offset_buf[j];
 			L3: for(int k = 0; k < FEAT; k++) {
-#pragma HLS PIPELINE II=1
 				tmp += in_buf[i][k] * weight_buf[j][k];
 			}
 			out_buf[i][j] = tmp;
