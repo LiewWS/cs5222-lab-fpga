@@ -30,7 +30,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	T in_buf[BATCH][FEAT];
 	T out_buf[BATCH][CLASSES];
 
-#pragma HLS ARRAY_RESHAPE variable=in_buf factor=8 block dim=1
+#pragma HLS ARRAY_RESHAPE variable=in_buf factor=4 block dim=1
 #pragma HLS ARRAY_RESHAPE variable=in_buf factor=16 block dim=2
 #pragma HLS ARRAY_RESHAPE variable=weight_buf factor=16 block dim=2
 
@@ -48,6 +48,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	// Stream in weight matrix
 	LOAD_W_1: for (int i = 0; i < CLASSES; i++) {
 		LOAD_W_2: for (int j = 0; j < FEAT; j+=WIDTH_RATIO) {
+#pragma HLS PIPELINE II=1
 			// Pop AXI data packet
 			converter.packet = pop_stream(in_stream[is_idx++]);
 			weight_buf[i][j+0]  = converter.val.f0;
@@ -59,6 +60,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	// Stream in input matrix
 	LOAD_I_1: for (int i = 0; i < BATCH; i++) {
 		LOAD_I_2: for (int j = 0; j < FEAT; j+=WIDTH_RATIO) {
+#pragma HLS PIPELINE II=1
 			// Pop AXI data packet
 			converter.packet = pop_stream(in_stream[is_idx++]);
 			in_buf[i][j+0]  = converter.val.f0;
