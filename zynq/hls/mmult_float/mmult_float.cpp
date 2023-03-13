@@ -30,7 +30,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	T in_buf[BATCH][FEAT];
 	T out_buf[BATCH][CLASSES];
 
-#pragma HLS ARRAY_RESHAPE variable=in_buf factor=4 block dim=1
+#pragma HLS ARRAY_RESHAPE variable=in_buf factor=8 block dim=1
 #pragma HLS ARRAY_RESHAPE variable=in_buf factor=16 block dim=2
 #pragma HLS ARRAY_RESHAPE variable=weight_buf factor=16 block dim=2
 
