@@ -31,8 +31,8 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	// CSE548 TODO
 	LOAD_OFF: for (int i = 0; i < CLASSES; i += OUT_WIDTH_RATIO) {
 		axi_T packet = pop_stream(in_stream[is_idx++]);
-		offset_buf[i+0] = packet >> (OUT_WIDTH);
-		offset_buf[i+1] = packet;
+		offset_buf[i+0] = packet;
+		offset_buf[i+1] = packet >> (OUT_WIDTH);
 	}
 
 	// Stream in weight matrix
@@ -41,7 +41,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 		LOAD_W_1: for (int j = 0; j < FEAT; j += W_WIDTH_RATIO) {
 			axi_T packet = pop_stream(in_stream[is_idx++]);
 			LOAD_W_BITS: for (int k = 0; k < W_WIDTH_RATIO; ++k) {
-				weight_buf[i][j+k] = packet >> ((W_WIDTH) * (7 - k));
+				weight_buf[i][j+k] = packet >> ((W_WIDTH) * k);
 			}
 		}
 	}
@@ -55,7 +55,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 			LOAD_I_1: for (int j = 0; j < FEAT; j += IN_WIDTH_RATIO) {
 				axi_T packet = pop_stream(in_stream[is_idx++]);
 				LOAD_I_BITS: for (int k = 0; k < IN_WIDTH_RATIO; ++k) {
-					in_buf[i][j+k] = packet >> ((IN_WIDTH) * (7 - k));
+					in_buf[i][j+k] = packet >> ((IN_WIDTH) * k);
 				}
 			}
 		}
@@ -78,8 +78,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 		// CSE548 TODO
 		STORE_0: for (int i = 0; i < TILING; ++i) {
 			STORE_1: for (int j = 0; j < CLASSES; j += OUT_WIDTH_RATIO) {
-				axi_T packet = out_buf[i][j+0];
-				packet = (packet << OUT_WIDTH) | out_buf[i][j+1];
+				axi_T packet = (out_buf[i][j+1] << (OUT_WIDTH)) | out_buf[i][j+0];
 				out_stream[os_idx++] = push_stream(packet, (os_idx == (OS_SIZE)));
 			}
 		}
