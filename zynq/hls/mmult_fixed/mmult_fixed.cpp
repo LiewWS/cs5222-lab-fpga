@@ -29,15 +29,36 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 
 	// Stream in offset vector
 	// CSE548 TODO
+	LOAD_OFF: for (int i = 0; i < CLASSES; i += OUT_WIDTH_RATIO) {
+		axi_T packet = pop_stream(in_stream[is_idx++]);
+		offset_buf[i+0] = packet >> (OUT_WIDTH);
+		offset_buf[i+1] = packet;
+	}
 
 	// Stream in weight matrix
 	// CSE548 TODO
+	LOAD_W_0: for (int i = 0; i < CLASSES; ++i) {
+		LOAD_W_1: for (int j = 0; j < FEAT; j += W_WIDTH_RATIO) {
+			axi_T packet = pop_stream(in_stream[is_idx++]);
+			LOAD_W_BITS: for (int k = 0; k < W_WIDTH_RATIO; ++k) {
+				weight_buf[i][j+k] = packet >> ((W_WIDTH) * (7 - k));
+			}
+		}
+	}
 
 	// Iterate over tiles
 	LT: for (int t = 0; t < BATCH; t+=TILING) {
 
 		// Stream in input tile
 		// CSE548 TODO
+		LOAD_I_0: for (int i = 0; i < TILING; ++i) {
+			LOAD_I_1: for (int j = 0; j < FEAT; j += IN_WIDTH_RATIO) {
+				axi_T packet = pop_stream(in_stream[is_idx++]);
+				LOAD_I_BITS: for (int k = 0; k < IN_WIDTH_RATIO; ++k) {
+					in_buf[i][j+k] = packet >> ((IN_WIDTH) * (7 - k));
+				}
+			}
+		}
 
 		// Perform matrix multiplication
 		L1: for (int i = 0; i < TILING; i++) {
@@ -55,6 +76,13 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 
 		// Stream out output matrix
 		// CSE548 TODO
+		STORE_0: for (int i = 0; i < TILING; ++i) {
+			STORE_1: for (j = 0; j < CLASSES; j += OUT_WIDTH_RATIO) {
+				axi_T packet = out_buf[i][j+0];
+				packet = (packet << OUT_WIDTH) | out_buf[i][j+1];
+				out_stream[os_idx++] = push_stream(packet, (os_idx == (OS_SIZE)));
+			}
+		}
 	}
 }
 
