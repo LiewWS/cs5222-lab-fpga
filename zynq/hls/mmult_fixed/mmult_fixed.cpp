@@ -77,7 +77,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 		// Stream out output matrix
 		// CSE548 TODO
 		STORE_0: for (int i = 0; i < TILING; ++i) {
-			STORE_1: for (j = 0; j < CLASSES; j += OUT_WIDTH_RATIO) {
+			STORE_1: for (int j = 0; j < CLASSES; j += OUT_WIDTH_RATIO) {
 				axi_T packet = out_buf[i][j+0];
 				packet = (packet << OUT_WIDTH) | out_buf[i][j+1];
 				out_stream[os_idx++] = push_stream(packet, (os_idx == (OS_SIZE)));
