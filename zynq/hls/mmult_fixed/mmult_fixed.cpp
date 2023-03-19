@@ -23,6 +23,9 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	in_T in_buf[TILING][FEAT];
 	out_T out_buf[TILING][CLASSES];
 
+#pragma HLS ARRAY_PARTITION variable=in_buf factor=8 block dim=2
+#pragma HLS ARRAY_PARTITION variable=weight_buf factor=8 block dim=2
+
 	// Input and output AXI stream indices
 	int is_idx = 0;
 	int os_idx = 0;
