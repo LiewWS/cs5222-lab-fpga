@@ -68,10 +68,10 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 		L1: for (int i = 0; i < TILING; i++) {
 			// Iterate over output classes
 			L2: for (int j = 0; j < CLASSES; j++) {
-#pragma HLS PIPELINE II=1
 				// Perform the dot product
 				out_T tmp = offset_buf[j];
 				L3: for(int k = 0; k < FEAT; k++) {
+					#pragma HLS PIPELINE II=1
 					out_T mult = in_buf[i][k] * weight_buf[j][k];
 					tmp += mult;
 				}
