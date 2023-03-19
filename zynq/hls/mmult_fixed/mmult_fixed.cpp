@@ -23,8 +23,8 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 	in_T in_buf[TILING][FEAT];
 	out_T out_buf[TILING][CLASSES];
 
-#pragma HLS ARRAY_PARTITION variable=in_buf factor=64 block dim=2
-#pragma HLS ARRAY_PARTITION variable=weight_buf factor=64 block dim=2
+#pragma HLS ARRAY_PARTITION variable=in_buf factor=32 block dim=2
+#pragma HLS ARRAY_PARTITION variable=weight_buf factor=32 block dim=2
 
 	// Input and output AXI stream indices
 	int is_idx = 0;
@@ -58,7 +58,6 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 		// Stream in input tile
 		// CSE548 TODO
 		LOAD_I_0: for (int i = 0; i < TILING; ++i) {
-#pragma HLS UNROLL factor=4
 			LOAD_I_1: for (int j = 0; j < FEAT; j += IN_WIDTH_RATIO) {
 #pragma HLS PIPELINE II=1
 				axi_T packet = pop_stream(in_stream[is_idx++]);
@@ -90,8 +89,10 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 		// CSE548 TODO
 		STORE_0: for (int i = 0; i < TILING; ++i) {
 			STORE_1: for (int j = 0; j < CLASSES; j += OUT_WIDTH_RATIO) {
+#pragma HLS PIPELINE II=1
 				axi_T packet = 0;
 				PACK_OUT: for (int k = 0; k < OUT_WIDTH_RATIO; ++k) {
+#pragma HLS UNROLL
 					out_bit_T bits = *((out_bit_T*) &out_buf[i][j+k]);
 					packet |= (bits & ((1ULL<<OUT_WIDTH)-1))<<(k*OUT_WIDTH);
 				}
