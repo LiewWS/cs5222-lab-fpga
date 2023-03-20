@@ -26,6 +26,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 #pragma HLS ARRAY_PARTITION variable=in_buf factor=64 block dim=2
 #pragma HLS ARRAY_PARTITION variable=weight_buf factor=64 block dim=2
 #pragma HLS RESOURCE variable=in_buf core=RAM_2P_LUTRAM
+#pragma HLS RESOURCE variable=weight_buf core=RAM_2P_BRAM
 
 	// Input and output AXI stream indices
 	int is_idx = 0;
