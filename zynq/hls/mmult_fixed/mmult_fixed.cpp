@@ -78,11 +78,12 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 				// Perform the dot product
 #pragma HLS PIPELINE II=1
 				out_T tmp = offset_buf[j];
-				L3: for(int k = 0; k < FEAT; k++) {
+				L3: for(int k = 0; k < FEAT; k += 2) {
 #pragma HLS UNROLL
-					out_T mult = in_buf[i][k] * weight_buf[j][k];
-#pragma HLS RESOURCE variable=mult core=mul_LUT
-					tmp += mult;
+					out_T mult0 = in_buf[i][k] * weight_buf[j][k];
+					out_T mult1 = in_buf[i][k+1] * weight_buf[j][k+1];
+#pragma HLS RESOURCE variable=mult1 core=mul_LUT
+					tmp += mult0 + mult1;
 				}
 				out_buf[i][j] = tmp;
 			}
