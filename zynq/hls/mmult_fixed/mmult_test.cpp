@@ -24,11 +24,11 @@ int main(void)
 {
 	int i,j,err;
 
-	out_T offsets[CLASSES];
-	w_T weights[CLASSES][FEAT];
-	in_T inputs[BATCH][FEAT];
-	out_T output_sw[BATCH][CLASSES];
-	out_T output_hw[BATCH][CLASSES];
+	static out_T offsets[CLASSES];
+	static w_T weights[CLASSES][FEAT];
+	static in_T inputs[BATCH][FEAT];
+	static out_T output_sw[BATCH][CLASSES];
+	static out_T output_hw[BATCH][CLASSES];
 
 	/** Matrix Initiation */
 	for(i = 0; i<CLASSES; i++) {
@@ -52,8 +52,8 @@ int main(void)
 	printf("DEBUGGING AXI4 STREAMING DATA TYPES!\r\n");
 
 	// prepare data for the DUT
-	AXI_VAL in_stream[IS_SIZE];
-	AXI_VAL out_stream[OS_SIZE];
+	static AXI_VAL in_stream[IS_SIZE];
+	static AXI_VAL out_stream[OS_SIZE];
 
 	// Input and output stream indices
 	int is_idx = 0;

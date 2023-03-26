@@ -1,5 +1,6 @@
 
 #include <assert.h>
+#include <stdint.h>
 #include <ap_axi_sdata.h>
 
 // Type definition of matrix elements
