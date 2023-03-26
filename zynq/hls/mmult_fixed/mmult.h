@@ -3,13 +3,13 @@
 #include <ap_axi_sdata.h>
 
 // Type definition of matrix elements
-typedef ap_int<8> w_T;
-typedef ap_uint<8> in_T;
+typedef ap_int<12> w_T;
+typedef ap_uint<12> in_T;
 typedef ap_int<32> out_T;
 // Equivalent-width integer types
-typedef unsigned char w_bit_T;
-typedef unsigned char in_bit_T;
-typedef unsigned out_bit_T;
+typedef uint16_t w_bit_T;
+typedef uint16_t in_bit_T;
+typedef uint32_t out_bit_T;
 
 // AXI width
 typedef unsigned long long axi_T;
