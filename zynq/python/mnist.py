@@ -140,13 +140,14 @@ if __name__ == '__main__':
 
     # Fixed point computation
     # CSE 548: Todo: tweak the SCALE to get less than 20% classification error
-    SCALE = 0
+    SCALE_OFFSET = 500
+    SCALE_WEIGHT = 514
     # CSE 548 - Change me
     offset = reg.intercept_
     weight = reg.coef_
-    offset = np.clip(offset*SCALE, -128, 127)
+    offset = np.clip(offset*SCALE_OFFSET, -128, 127)
     offset = offset.astype(np.int32)
-    weight = np.clip(weight*SCALE, -128, 127)
+    weight = np.clip(weight*SCALE_WEIGHT, -128, 127)
     weight = weight.astype(np.int8)
     # Perform fixed-point classification
     ones = np.ones(len(test_data)).reshape((len(test_data),1))
