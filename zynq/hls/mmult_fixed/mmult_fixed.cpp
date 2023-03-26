@@ -81,6 +81,7 @@ void mmult_hw (AXI_VAL in_stream[IS_SIZE], AXI_VAL out_stream[OS_SIZE])
 				L3: for(int k = 0; k < FEAT; k++) {
 #pragma HLS UNROLL
 					out_T mult = in_buf[i][k] * weight_buf[j][k];
+#pragma HLS RESOURCE variable=mult core=mul_LUT
 					tmp += mult;
 				}
 				out_buf[i][j] = tmp;
